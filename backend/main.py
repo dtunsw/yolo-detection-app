@@ -57,6 +57,13 @@ async def detect_video(file: UploadFile):
     if file.content_type not in video_items:
         raise HTTPException(status_code=400, detail="Invalid file type")
 
+    #limit file size
+    await file.seek(0,2)
+    file_size = file.file.tell()
+    await file.seek(0)
+    if file_size > 100*1024*1024:
+        raise HTTPException(status_code=400, detail="File's size too large")
+
     #save temporary file
     contents = await file.read()
     print (len(contents))
