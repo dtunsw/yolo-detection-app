@@ -1,10 +1,11 @@
-from fastapi import FastAPI, UploadFile
+from fastapi import FastAPI, UploadFile, HTTPException
 from ultralytics import YOLO
 import json
 import time
 
 app = FastAPI(title="Yolo Detection App")
 model = YOLO("yolo26n.pt")
+items = {"image/jpeg", "image/png"}
 
 #health check
 @app.get ("/health")
@@ -14,6 +15,8 @@ def health_check():
 #detect image
 @app.post ("/api/detect/image") 
 async def upload_files(file: UploadFile):
+    if file.content_type not in items:
+        raise HTTPException (status_code=400, detail="Invalide file type")
     #save temporary image files
     contents = await file.read()
     print (len(contents))
