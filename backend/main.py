@@ -58,9 +58,9 @@ async def detect_video(file: UploadFile):
         raise HTTPException(status_code=400, detail="Invalid file type")
 
     #limit file size
-    await file.seek(0,2)
+    file.file.seek(0,2)
     file_size = file.file.tell()
-    await file.seek(0)
+    file.file.seek(0)
     if file_size > 100*1024*1024:
         raise HTTPException(status_code=400, detail="File's size too large")
 
