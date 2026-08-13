@@ -5,7 +5,8 @@ import time
 
 app = FastAPI(title="Yolo Detection App")
 model = YOLO("yolo26n.pt")
-items = {"image/jpeg", "image/png"}
+image_items = {"image/jpeg", "image/png"}
+video_items = {"video/mp4"}
 
 #health check
 @app.get ("/health")
@@ -15,8 +16,9 @@ def health_check():
 #detect image
 @app.post ("/api/detect/image") 
 async def upload_files(file: UploadFile):
-    if file.content_type not in items:
+    if file.content_type not in image_items:
         raise HTTPException (status_code=400, detail="Invalide file type")
+
     #save temporary image files
     contents = await file.read()
     print (len(contents))
@@ -47,3 +49,30 @@ async def upload_files(file: UploadFile):
         })
     
     return (response)
+
+#detect videos
+@app.post ("/api/detect/video")
+async def detect_video(file: UploadFile):
+    #file type detect
+    if file.content_type not in video_items:
+        raise HTTPException(status_code=400, detail="Invalid file type")
+
+    #save temporary file
+    contents = await file.read()
+    print (len(contents))
+    temp_path = "temp" + file.filename
+    with open (temp_path, "wb") as f:
+        f.write(contents)
+
+    #video detection process
+    result = model(temp_path)
+    boxes = result[0].boxes
+    print (boxes)
+    detection = []
+    for i in range(len(boxes.cls)):
+        cls = int(boxes.cls[i])
+        conf = float(boxes.conf[i])
+        xyxy = boxes.xyxy[i].tolist()
+        detection.append({"class":model.names[cls], "confidence":round(conf,2), "bbox": [round(coord,2) for coord in xyxy]})
+    count = len(boxes.cls)
+    return (detection, count)
