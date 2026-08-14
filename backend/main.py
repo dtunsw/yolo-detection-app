@@ -67,19 +67,20 @@ async def detect_video(file: UploadFile):
     #save temporary file
     contents = await file.read()
     print (len(contents))
-    temp_path = "temp" + file.filename
+    temp_path = "temp_" + file.filename
     with open (temp_path, "wb") as f:
         f.write(contents)
 
     #video detection process
     result = model(temp_path)
-    boxes = result[0].boxes
-    print (boxes)
-    detection = []
-    for i in range(len(boxes.cls)):
-        cls = int(boxes.cls[i])
-        conf = float(boxes.conf[i])
-        xyxy = boxes.xyxy[i].tolist()
-        detection.append({"class":model.names[cls], "confidence":round(conf,2), "bbox": [round(coord,2) for coord in xyxy]})
-    count = len(boxes.cls)
-    return (detection, count)
+
+    class_counts = {}
+
+    for frame_result in result:
+        frame_boxes = frame_result.boxes
+        for i in range (len(frame_result.boxes)):
+            class_name = model.names[int(frame_boxes.cls[i])]
+            class_counts[class_name] = class_counts.get(class_name, 0) + 1
+
+    return {"summary": class_counts}
+     
