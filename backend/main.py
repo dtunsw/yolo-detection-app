@@ -83,4 +83,4 @@ async def detect_video(file: UploadFile):
             class_counts[class_name] = class_counts.get(class_name, 0) + 1
 
     return {"summary": class_counts}
-     
+    
