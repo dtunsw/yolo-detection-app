@@ -1,7 +1,10 @@
 from fastapi import FastAPI, UploadFile, HTTPException
+from fastapi.responses import FileResponse
 from ultralytics import YOLO
 import json
 import time
+import os
+import cv2
 
 app = FastAPI(title="Yolo Detection App")
 model = YOLO("yolo26n.pt")
@@ -19,13 +22,20 @@ async def upload_files(file: UploadFile):
     if file.content_type not in image_items:
         raise HTTPException (status_code=400, detail="Invalide file type")
 
+ #limit file size
+    file.file.seek(0,2)
+    file_size = file.file.tell()
+    file.file.seek(0)
+    if file_size > 50*1024*1024:
+        raise HTTPException(status_code=400, detail="File size too large!")
+
     #save temporary image files
     contents = await file.read()
     print (len(contents))
     temp_path = "temp_" + file.filename
     with open (temp_path, "wb") as f:
         f.write(contents)
-
+   
     #image detection process
     start_time = time.time()
     results=model(temp_path)
@@ -40,15 +50,23 @@ async def upload_files(file: UploadFile):
     count = len(boxes.cls)
     end_time = time.time()
     time_result = (end_time - start_time)*1000
+    annotated = results[0].plot()
+    output_filename = "annotated" + file.filename
+    annotated_image = cv2.imwrite(filename=output_filename, img=annotated)
 
     #Response w/ JSON format
     response = ({
         "count": count, 
         "detection": detection,
-        "time": time_result
+        "time": time_result,
+        "annotated_image": output_filename
         })
-    
+    os.remove (temp_path)
     return (response)
+#get image
+@app.get ("/images/{filename}")
+def get_image (filename: str):
+    return FileResponse(filename)
 
 #detect videos
 @app.post ("/api/detect/video")
@@ -81,6 +99,6 @@ async def detect_video(file: UploadFile):
         for i in range (len(frame_result.boxes)):
             class_name = model.names[int(frame_boxes.cls[i])]
             class_counts[class_name] = class_counts.get(class_name, 0) + 1
-
+    os.remove (temp_path)
     return {"summary": class_counts}
     
