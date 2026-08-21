@@ -1,4 +1,5 @@
 from fastapi import FastAPI, UploadFile, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from ultralytics import YOLO
 import json
@@ -7,6 +8,13 @@ import os
 import cv2
 
 app = FastAPI(title="Yolo Detection App")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins = ["http://localhost:8888"],
+    allow_methods= {"*"},
+    allow_headers={"*"}
+)
+
 model = YOLO("yolo26n.pt")
 image_items = {"image/jpeg", "image/png"}
 video_items = {"video/mp4"}
