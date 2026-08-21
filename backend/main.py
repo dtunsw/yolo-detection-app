@@ -10,7 +10,7 @@ import cv2
 app = FastAPI(title="Yolo Detection App")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins = ["http://localhost:8888"],
+    allow_origins = ["http://localhost:5173"],
     allow_methods= {"*"},
     allow_headers={"*"}
 )
