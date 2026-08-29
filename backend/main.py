@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, HTTPException
+from fastapi import FastAPI, UploadFile, HTTPException, File
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from ultralytics import YOLO
@@ -26,7 +26,7 @@ def health_check():
 
 #detect image
 @app.post ("/api/detect/image") 
-async def upload_files(file: UploadFile):
+async def upload_files(file: UploadFile = File(...)):
     if file.content_type not in image_items:
         raise HTTPException (status_code=400, detail="Invalide file type")
 
@@ -101,12 +101,20 @@ async def detect_video(file: UploadFile):
     result = model(temp_path)
 
     class_counts = {}
-
+    output_video = cv2.VideoCapture(temp_path)
+    output_filename = "annotated" + file.filename
+    annotated_video = cv2.VideoWriter(filename = output_filename, fourcc = cv2.VideoWriter_fourcc(*'mp4v'), fps = output_video.get(cv2.CAP_PROP_FPS), frameSize = (int(output_video.get(cv2.CAP_PROP_FRAME_WIDTH)), int(output_video.get(cv2.CAP_PROP_FRAME_HEIGHT))))
+    for results in result:
+        annotated_frame = results.plot()
+        annotated_video.write(annotated_frame)
+    output_video.release()
+    annotated_video.release()
     for frame_result in result:
         frame_boxes = frame_result.boxes
         for i in range (len(frame_result.boxes)):
             class_name = model.names[int(frame_boxes.cls[i])]
             class_counts[class_name] = class_counts.get(class_name, 0) + 1
+
     os.remove (temp_path)
     return {"summary": class_counts}
     
