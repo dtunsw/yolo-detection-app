@@ -6,12 +6,6 @@ import './App.css'
 
 function App() {
   const [count, setCount] = useState(0)
-  useEffect(() => {
-    fetch ("http://localhost:8888/health")
-    .then((res) => res.json())
-    .then ((data) => console.log(data))
-    .catch((err) => console.log(err))
-  },[])
   return (
     <>
       <div>
@@ -34,6 +28,9 @@ function App() {
       <p className="read-the-docs">
         Click on the Vite and React logos to learn more
       </p>
+      <button onClick={() => window.location.href = '/health'}>
+        Check Backend Health
+      </button>
     </>
   )
 }
