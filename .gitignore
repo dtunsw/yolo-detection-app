@@ -218,3 +218,7 @@ __marimo__/
 .streamlit/secrets.toml
 temp_*
 *.jpg
+*.pt
+*.mp4
+annotated*
+raw_*
