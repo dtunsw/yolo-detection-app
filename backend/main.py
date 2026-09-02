@@ -2,6 +2,7 @@ from fastapi import FastAPI, UploadFile, HTTPException, File
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from ultralytics import YOLO
+import subprocess
 import json
 import time
 import os
@@ -71,10 +72,7 @@ async def upload_files(file: UploadFile = File(...)):
         })
     os.remove (temp_path)
     return (response)
-#get image
-@app.get ("/images/{filename}")
-def get_image (filename: str):
-    return FileResponse(filename)
+
 
 #detect videos
 @app.post ("/api/detect/video")
@@ -102,8 +100,9 @@ async def detect_video(file: UploadFile):
 
     class_counts = {}
     output_video = cv2.VideoCapture(temp_path)
+    raw_filename = "raw" + file.filename
     output_filename = "annotated" + file.filename
-    annotated_video = cv2.VideoWriter(filename = output_filename, fourcc = cv2.VideoWriter_fourcc(*'mp4v'), fps = output_video.get(cv2.CAP_PROP_FPS), frameSize = (int(output_video.get(cv2.CAP_PROP_FRAME_WIDTH)), int(output_video.get(cv2.CAP_PROP_FRAME_HEIGHT))))
+    annotated_video = cv2.VideoWriter(filename = raw_filename, fourcc = cv2.VideoWriter_fourcc(*'mp4v'), fps = output_video.get(cv2.CAP_PROP_FPS), frameSize = (int(output_video.get(cv2.CAP_PROP_FRAME_WIDTH)), int(output_video.get(cv2.CAP_PROP_FRAME_HEIGHT))))
     for results in result:
         annotated_frame = results.plot()
         annotated_video.write(annotated_frame)
@@ -115,6 +114,15 @@ async def detect_video(file: UploadFile):
             class_name = model.names[int(frame_boxes.cls[i])]
             class_counts[class_name] = class_counts.get(class_name, 0) + 1
 
+    subprocess.run([
+        "ffmpeg", "-y", "-i", raw_filename,
+        "-vcodec", "libx264", "-pix_fmt", "yuv420p",
+        output_filename
+    ], check=True)
     os.remove (temp_path)
-    return {"summary": class_counts}
+    os.remove (raw_filename)
+    return {"summary": class_counts, "annotated_video": output_filename}
     
+@app.get ("/results/{filename}")
+def get_result (filename: str):
+    return FileResponse(filename)
