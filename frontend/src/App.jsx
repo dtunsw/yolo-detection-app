@@ -28,8 +28,16 @@ function App() {
       <p className="read-the-docs">
         Click on the Vite and React logos to learn more
       </p>
+      <button onClick={() => window.location.href = '/upload/image'}>
+        Upload Image
+      </button>
+
       <button onClick={() => window.location.href = '/health'}>
         Check Backend Health
+      </button>
+
+      <button onClick={() => window.location.href = '/upload/video'}>
+        Upload Video
       </button>
     </>
   )

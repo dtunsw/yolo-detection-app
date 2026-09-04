@@ -123,6 +123,6 @@ async def detect_video(file: UploadFile):
     os.remove (raw_filename)
     return {"summary": class_counts, "annotated_video": output_filename}
     
-@app.get ("/results/{filename}")
+@app.get ("/api/results/{filename}")
 def get_result (filename: str):
     return FileResponse(filename)

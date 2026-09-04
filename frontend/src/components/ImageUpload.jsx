@@ -29,6 +29,9 @@ function ImageUpload() {
       </form>
       {result && (
         <div>
+          <button onClick={() => window.location.href = `/results/${result.annotated_image}`}>
+            View Result
+          </button>
           <h2>Upload Result:</h2>
           <p>{JSON.stringify(result)}</p>
         </div>
