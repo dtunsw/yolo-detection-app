@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+venv/
+.venv/
+.pytest_cache/
+*.mp4
+*.jpg
+*.jpeg
+*.png
+temp_*
+annotated*
+raw*
+.git
+.env
