@@ -7,8 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "api": "cd /home/dtunsw/yolo-detection-app/backend && venv/bin/uvicorn main:app --reload --port 8888"
+    "preview": "vite preview"
   },
   "dependencies": {
     "react": "^18.3.1",
