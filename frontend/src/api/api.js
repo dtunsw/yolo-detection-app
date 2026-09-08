@@ -1,5 +1,7 @@
+const API_BASE = import.meta.env.VITE_API_BASE_URL
+
 export async function getHealth(file) {
-    const res = await fetch("http://localhost:8888/health",)
+    const res = await fetch(`${API_BASE}/health`)
     return res.json();
 }
 
@@ -12,7 +14,7 @@ export async function detectImage(fileOrFormData) {
             return data;
         })();
 
-    const res = await fetch("http://localhost:8888/api/detect/image", {
+    const res = await fetch(`${API_BASE}/api/detect/image`, {
         method: 'POST',
         body: formData
     });
@@ -34,7 +36,7 @@ export async function detectVideo(fileOrFormData) {
             return data;
         })();
 
-    const res = await fetch("http://localhost:8888/api/detect/video", {
+    const res = await fetch(`${API_BASE}/api/detect/video`, {
         method: 'POST',
         body: formData
     });
@@ -48,6 +50,6 @@ export async function detectVideo(fileOrFormData) {
 }
 
 export async function getResults(filename){
-    const res = await fetch(`http://localhost:8888/api/results/${filename}`)
+    const res = await fetch(`${API_BASE}/api/results/${filename}`)
     return res.blob();
 }

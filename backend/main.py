@@ -8,10 +8,11 @@ import time
 import os
 import cv2
 
+CORS_ORIGINS = os.getenv("CORS_ORIGINS","http://localhost:5173")
 app = FastAPI(title="Yolo Detection App")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins = ["http://localhost:5173"],
+    allow_origins = [CORS_ORIGINS],
     allow_methods= {"*"},
     allow_headers={"*"}
 )
