@@ -17,7 +17,9 @@ app.add_middleware(
     allow_headers={"*"}
 )
 
-model = YOLO("yolo26n.pt")
+MODEL_NAME = os.getenv("MODEL_NAME", "yolo26n.pt")
+model = YOLO(MODEL_NAME)
+
 image_items = {"image/jpeg", "image/png"}
 video_items = {"video/mp4"}
 
@@ -36,7 +38,8 @@ async def upload_files(file: UploadFile = File(...)):
     file.file.seek(0,2)
     file_size = file.file.tell()
     file.file.seek(0)
-    if file_size > 50*1024*1024:
+    MAX_IMG_SIZE = os.getenv("MAX_FILE_SIZE", 50*1024*1024)
+    if file_size > MAX_IMG_SIZE:
         raise HTTPException(status_code=400, detail="File size too large!")
 
     #save temporary image files
@@ -86,7 +89,8 @@ async def detect_video(file: UploadFile):
     file.file.seek(0,2)
     file_size = file.file.tell()
     file.file.seek(0)
-    if file_size > 100*1024*1024:
+    MAX_VIDEO_SIZE = os.getenv("MAX_VIDEO_SIZE", 100*1024*1024)
+    if file_size > MAX_VIDEO_SIZE:
         raise HTTPException(status_code=400, detail="File's size too large")
 
     #save temporary file
