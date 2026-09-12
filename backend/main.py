@@ -38,8 +38,8 @@ async def upload_files(file: UploadFile = File(...)):
     file.file.seek(0,2)
     file_size = file.file.tell()
     file.file.seek(0)
-    MAX_IMG_SIZE = os.getenv("MAX_FILE_SIZE", 50*1024*1024)
-    if file_size > MAX_IMG_SIZE:
+    MAX_IMG_SIZE_MB = int(os.getenv("MAX_IMG_SIZE", 50))
+    if file_size > MAX_IMG_SIZE_MB * 1024 * 1024:
         raise HTTPException(status_code=400, detail="File size too large!")
 
     #save temporary image files
@@ -89,8 +89,8 @@ async def detect_video(file: UploadFile):
     file.file.seek(0,2)
     file_size = file.file.tell()
     file.file.seek(0)
-    MAX_VIDEO_SIZE = os.getenv("MAX_VIDEO_SIZE", 100*1024*1024)
-    if file_size > MAX_VIDEO_SIZE:
+    MAX_VIDEO_SIZE_MB = int(os.getenv("MAX_VIDEO_SIZE", 100))
+    if file_size > MAX_VIDEO_SIZE_MB * 1024 * 1024:
         raise HTTPException(status_code=400, detail="File's size too large")
 
     #save temporary file

@@ -4,10 +4,10 @@ services:
     ports:
       - "8888:8888"
     environment:
-      - CORS_ORIGINS = http://localhost:5173
-      - MAX_IMG_SIZE = 50 * 1024 * 1024
-      - MAX_VIDEO_SIZE = 100 * 1024 * 1024
-      - MODEL_NAME = yolo26n.pt
+      - CORS_ORIGINS=http://localhost:5173
+      - MAX_IMG_SIZE=50
+      - MAX_VIDEO_SIZE=100
+      - MODEL_NAME=yolo26n.pt
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8888/health')"]
       interval: 1m30s
