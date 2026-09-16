@@ -8,6 +8,8 @@ services:
       - MAX_IMG_SIZE=50
       - MAX_VIDEO_SIZE=100
       - MODEL_NAME=yolo26n.pt
+    networks:
+      - yolo-net
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8888/health')"]
       interval: 1m30s
@@ -22,6 +24,12 @@ services:
         - VITE_API_BASE_URL=http://localhost:8888
     ports:
       - "5173:80"
+    networks:
+      - yolo-net
     depends_on:
       - backend
     restart: unless-stopped
+
+networks:
+  yolo-net:
+    driver: bridge
