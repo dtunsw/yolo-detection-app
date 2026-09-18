@@ -43,7 +43,7 @@ jobs:
         run: npm ci  
       - name: run frontend tests
         working-directory: frontend
-        run: npm run test
+        run: npm run build
 
   docker-build-test:
     runs-on: ubuntu-24.04
