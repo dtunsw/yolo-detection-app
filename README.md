@@ -8,7 +8,6 @@ and deploy to cloud (Render).
 
 ## Team Members
 - Dao Huy Tuan
-- 
 
 ## Branch Rules
 - 'main' is the main branch, which is protected: DO NOT push directly, all the
