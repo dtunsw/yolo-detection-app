@@ -17,6 +17,7 @@ app.add_middleware(
     allow_headers={"*"},
 )
 
+CONFIDENCE_DEFAULT = float(os.getenv("CONFIDENCE_DEFAULT", "0.25"))
 MODEL_NAME = os.getenv("MODEL_NAME", "yolo26n.pt")
 model = YOLO(MODEL_NAME)
 
@@ -53,7 +54,7 @@ async def upload_files(file: UploadFile = File(...)):
 
     # image detection process
     start_time = time.time()
-    results = model(temp_path)
+    results = model(temp_path, conf=CONFIDENCE_DEFAULT)
     boxes = results[0].boxes
     print(boxes)
     detection = []
@@ -109,7 +110,7 @@ async def detect_video(file: UploadFile):
         f.write(contents)
 
     # video detection process
-    result = model(temp_path)
+    result = model(temp_path, conf=CONFIDENCE_DEFAULT)
 
     class_counts = {}
     output_video = cv2.VideoCapture(temp_path)
